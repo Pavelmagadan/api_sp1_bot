@@ -22,31 +22,58 @@ logging.basicConfig(
     ]
 )
 
-PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
 
 
 def parse_homework_status(homework):
-    homework_name = homework['homework_name']
-    if homework['status'] == 'rejected':
-        verdict = 'К сожалению в работе нашлись ошибки.'
-    elif homework['status'] == 'reviewing:':
-        verdict = 'Работу взяли на ревью.'
-    else:
-        verdict = (
+    homework_name = homework.get('homework_name')
+    hw_verdict = {
+        'rejected': (
+            f'У вас проверили работу "{homework_name}"!\n\n'
+            'К сожалению в работе нашлись ошибки.'
+        ),
+        'reviewing': (
+            f'Работу "{homework_name}" взяли на ревью!'
+        ),
+        'approved': (
+            f'У вас проверили работу "{homework_name}"!\n\n'
             'Ревьюеру всё понравилось, можно приступать '
             'к следующему уроку.'
         )
-    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    }
+    homework_status = homework.get('status')
+    verdict = hw_verdict.get(homework_status)
+    if not (homework_name and verdict):
+        logging.warning(
+            'функция parse_homework_status вызвана с '
+            'homework_name или verdict равным None'
+        )
+        return 'Статус вашей работы изменился!'
+    return verdict
 
 
 def get_homework_statuses(current_timestamp):
-    url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+    # url нужно задавать здесь для прохождения тестов
+    url = (
+        'https://praktikum.yandex.ru/api/user_api/'
+        'homework_statuses/'
+    )
     param = {'from_date': current_timestamp}
-    header = {'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'}
-    homework_statuses = requests.get(url, params=param, headers=header)
-    return homework_statuses.json()
+    header = {'Authorization': f'OAuth  {PRAKTIKUM_TOKEN}'}
+    try:
+        homework_statuses = requests.get(
+            url,
+            params=param,
+            headers=header
+        )
+        return homework_statuses.json()
+    except Exception:
+        logging.exception(
+            'Возникла ошибка при обращении к API YaPraktikum'
+        )
+        return {}
 
 
 def send_message(message, bot_client):
@@ -56,14 +83,20 @@ def send_message(message, bot_client):
 def main():
     bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
     logging.debug('Запуск бота')
+    send_message(
+        'Бот в работе',
+        bot
+    )
     current_timestamp = int(time.time())
-    print(current_timestamp)
     while True:
         try:
             new_homework = get_homework_statuses(current_timestamp)
             if new_homework.get('homeworks'):
+                massage = parse_homework_status(
+                    new_homework.get('homeworks')[0]
+                )
                 send_message(
-                    parse_homework_status(new_homework.get('homeworks')[0]),
+                    massage,
                     bot
                 )
                 logging.info('Отправлено сообщение')
@@ -71,15 +104,13 @@ def main():
                 'current_date',
                 current_timestamp
             )
-            print(current_timestamp)
             time.sleep(300)
-
-        except Exception as e:
-            logging.error(
-                f'Бот столкнулся с ошибкой: {e.__class__.__name__}: {e}'
+        except Exception:
+            logging.exception(
+                'Бот столкнулся с ошибкой'
             )
             send_message(
-                f'Бот столкнулся с ошибкой: {e.__class__.__name__}: {e}',
+                'Бот столкнулся с ошибкой',
                 bot
             )
             time.sleep(5)
