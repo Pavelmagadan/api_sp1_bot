@@ -44,24 +44,32 @@ def parse_homework_status(homework):
         )
     }
     homework_status = homework.get('status')
-    verdict = hw_verdict.get(homework_status)
-    if not (homework_name and verdict):
+    if homework_name is None or homework_status is None:
         logging.warning(
-            'функция parse_homework_status вызвана с '
-            'homework_name или verdict равным None'
+            'API YaPraktikum вернул пустой словарь!'
         )
-        return 'Статус вашей работы изменился!'
+        return 'API YaPraktikum вернул пустой словарь!'
+    verdict = hw_verdict.get(homework_status)
+    if verdict is None:
+        logging.warning(
+            f'homework_status равно {homework_status}'
+            'Значение переменой homework_status полученное с API '
+            'YaPraktikum не соответствует ожидаемому!'
+        )
+        return (
+            f'homework_status равно {homework_status}'
+            'Значение переменой homework_status полученное с API '
+            'YaPraktikum не соответствует ожидаемому!'
+        )
     return verdict
 
 
 def get_homework_statuses(current_timestamp):
-    # url нужно задавать здесь для прохождения тестов
     url = (
-        'https://praktikum.yandex.ru/api/user_api/'
-        'homework_statuses/'
+        'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
     )
     param = {'from_date': current_timestamp}
-    header = {'Authorization': f'OAuth  {PRAKTIKUM_TOKEN}'}
+    header = {'Authorization': f'OAuth {PRAKTIKUM_TOKEN}'}
     try:
         homework_statuses = requests.get(
             url,
@@ -73,7 +81,7 @@ def get_homework_statuses(current_timestamp):
         logging.exception(
             'Возникла ошибка при обращении к API YaPraktikum'
         )
-        return {}
+        raise Exception('Возникла ошибка при обращении к API YaPraktikum')
 
 
 def send_message(message, bot_client):
