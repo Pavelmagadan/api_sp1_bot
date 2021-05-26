@@ -121,7 +121,7 @@ def main():
                 'Бот столкнулся с ошибкой',
                 bot
             )
-            time.sleep(5)
+            time.sleep(60)
 
 
 if __name__ == '__main__':
