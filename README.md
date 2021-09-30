@@ -16,7 +16,7 @@
 ![](https://img.shields.io/badge/python-v3.7-blue)
 
 ## Как развернуть
-1. Склонируйте репозиторий: ```https://github.com/palmage/api_sp1_bot```.
+1. Склонируйте репозиторий: ```https://github.com/palmage/telegram_bot```.
 2. С помощью [инструкции](https://python-scripts.com/virtualenv) создайте и активируйте виртуальное окружение.
 3. Установите зависимости: ```pip install -r requirements.txt```.
 2. Добавите файл `api_sp1_bot/.env` и добавте переменные окружения:
