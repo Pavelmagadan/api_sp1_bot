@@ -1,16 +1,28 @@
-# Telegram-bot проверки статуса домашней работы
+# Учебный проект: Telegram-bot проверки статуса домашней работы
 
 ## Описание проекта
-Бот-асcистент используется для оповещения об изменения статуса домашней работы через мессенджер Telegram.
+Бот-асcистент используется для оповещения об изменения статуса домашней работы на курсе Яндекс.Практикум через мессенджер Telegram.
 Для мониторинга статуса ДР бот опрашивает API Яндекс.Практикум.
+
+Сообщения от бота:
+
+* У вас проверили работу "<homework_name>"!  
+  К сожалению в работе нашлись ошибки.
+* Работу "<homework_name>" взяли на ревью!
+* У вас проверили работу "{homework_name}"!  
+  Ревьюеру всё понравилось, можно приступать к следующему уроку.
+
 ## Требования
-Версия Python 3.7
+![](https://img.shields.io/badge/python-v3.7-blue)
+
 ## Как развернуть
-1. Установите зависимости: `pip install -r requirements.txt`.
-2. Добавите файл `api_sp1_bot/.env` и заполните в нем настройки:
+1. Склонируйте репозиторий: ```https://github.com/palmage/api_sp1_bot```.
+2. С помощью [инструкции](https://python-scripts.com/virtualenv) создайте и активируйте виртуальное окружение.
+3. Установите зависимости: ```pip install -r requirements.txt```.
+2. Добавите файл `api_sp1_bot/.env` и добавте переменные окружения:
+```PowerShell
+TELEGRAM_TOKEN = '<telegram_token>'
+TELEGRAM_CHAT_ID = '<telegram_chat_id>'
+PRAKTIKUM_TOKEN = '<yandex_prakticum_token>'
 ```
-TELEGRAM_TOKEN = <telegram_token>
-TELEGRAM_CHAT_ID = <telegram_chat_id>
-PRAKTIKUM_TOKEN = <yandex_prakticum_token>
-```
-3. Запустите файл `api_sp1_bot/homework.py`.
+5. Запустите программу: ```python homework.py```.
