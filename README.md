@@ -19,7 +19,7 @@
 1. Склонируйте репозиторий: ```https://github.com/palmage/telegram_bot```.
 2. С помощью [инструкции](https://python-scripts.com/virtualenv) создайте и активируйте виртуальное окружение.
 3. Установите зависимости: ```pip install -r requirements.txt```.
-2. Добавите файл `api_sp1_bot/.env` и добавте переменные окружения:
+4. Добавьте файл `api_sp1_bot/.env` и внесите в него переменные окружения:
 ```PowerShell
 TELEGRAM_TOKEN = '<telegram_token>'
 TELEGRAM_CHAT_ID = '<telegram_chat_id>'
